@@ -1,0 +1,53 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:VisualGrep.ViewModels;assembly=VisualGrep"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="VisualGrep.Avalonia.Views.MainView"
+             x:DataType="vm:MainViewModel">
+  <Design.DataContext>
+    <!-- This only sets the DataContext for the previewer in an IDE,
+         to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+    <vm:MainViewModel />
+  </Design.DataContext>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="20"/>
+            <RowDefinition Height="20"/>
+            <RowDefinition Height="20"/>
+            <RowDefinition Height="20"/>
+            <RowDefinition Height="500"/>
+            <RowDefinition Height="500"/>
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="0" Orientation="Horizontal">
+            <Button Command="{Binding FolderSelectCommand}"></Button>
+            <ComboBox HorizontalAlignment="Stretch"></ComboBox>
+            <Button HorizontalAlignment="Right"></Button>
+            <CheckBox HorizontalAlignment="Right"></CheckBox>
+        </StackPanel>
+        <StackPanel Grid.Row="1"  Orientation="Horizontal"/>
+        <StackPanel Grid.Row="2"  Orientation="Horizontal"/>
+        <StackPanel Grid.Row="3"  Orientation="Horizontal"/>
+        <DataGrid Grid.Row="4" 
+                  AutoGenerateColumns="True" 
+                  IsReadOnly="True"
+                  GridLinesVisibility="All"
+                  BorderThickness="1"
+                  ItemsSource="{Binding LogRecords}" 
+                  SelectedItem="{Binding SelectedLogRecord}"
+                  HorizontalAlignment="Stretch"
+                  VerticalAlignment="Stretch"
+                  RowHeight="20"
+                  >
+            <!--<DataGrid.Columns>
+                <DataGridTextColumn Header="First Name"  Binding="{Binding FileName}"/>
+                <DataGridTextColumn Header="Last Name" Binding="{Binding Message}" />
+            </DataGrid.Columns>-->
+        </DataGrid>
+        <DataGrid Grid.Row="5">
+
+        </DataGrid>
+    </Grid>
+</UserControl>
