@@ -1,7 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Runtime.Serialization;
-
+using DynamicData;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -11,17 +11,20 @@ namespace VisualGrep.ViewModels;
 
 public class MainViewModel : ViewModelBase
 {
+    private CancellationTokenSource? loadCancellationSource;
+    private SemaphoreSlim loadEndEvent = new SemaphoreSlim(1);
+
     public MainViewModel()
     {
         this.LogRecords = [
             new LogRecord 
-                { FileName = "f1", LineNumber = 1, Message = "message1" },
+                { FileName = "f1", LineNumber = "1", Message = "message1" },
             new LogRecord 
-                { FileName = "f1", LineNumber = 2, Message = "message2" },
+                { FileName = "f1", LineNumber = "2", Message = "message2" },
             new LogRecord 
-                { FileName = "f1", LineNumber = 3, Message = "message3" },
+                { FileName = "f1", LineNumber = "3", Message = "message3" },
             new LogRecord 
-                { FileName = "f1", LineNumber = 4, Message = "message4" }
+                { FileName = "f1", LineNumber = "4", Message = "message4" }
         ];
 
         this.FolderSelectCommand = ReactiveCommand.Create(this.OnFolderSelectCommand);
@@ -38,14 +41,28 @@ public class MainViewModel : ViewModelBase
 
     private async void OnFolderSelectCommand()
     {
-        var lr = new LogRecord()
+        if (this.loadCancellationSource != null)
         {
-            FileName = "f1",
-            LineNumber = 1,
-            Message = Guid.NewGuid().ToString(),
-        };
+            this.loadCancellationSource.Cancel();
 
-        this.LogRecords.Add(lr);
+            this.LogRecords.Clear();
+        }
+
+
+        await this.loadEndEvent.WaitAsync();
+        this.loadCancellationSource = new CancellationTokenSource();
+        var folder = @"C:\_Work_\_EG_\POCs\VisualGrep\gcfra1022_log\";
+
+        var reader = new FileReader(folder, "*.*");
+
+        await foreach (var lr in reader.GetLogRecords().WithCancellation(this.loadCancellationSource.Token))
+        {
+            this.LogRecords.AddRange(lr);
+        }
+
+        this.loadCancellationSource.Dispose();
+        this.loadCancellationSource = null;
+        this.loadEndEvent.Release();
     }
 
 }
