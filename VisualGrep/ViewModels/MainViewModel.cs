@@ -28,10 +28,17 @@ public class MainViewModel : ViewModelBase
         ];
 
         this.FolderSelectCommand = ReactiveCommand.Create(this.OnFolderSelectCommand);
+        this.SearchCommand = ReactiveCommand.Create(this.OnSearchCommand);
+        this.StopCommand = ReactiveCommand.Create(this.OnStopCommand);
+
+        this.Status = "text";
     }
 
     [Reactive]
     public ObservableCollection<LogRecord> LogRecords { get; set; }
+
+    [Reactive]
+    public string Status { get; private set; }
 
     [Reactive]
     public LogRecord SelectedLogRecord { get; set; }
@@ -39,15 +46,39 @@ public class MainViewModel : ViewModelBase
     [IgnoreDataMember]
     public ReactiveCommand<Unit, Unit> FolderSelectCommand { get; }
 
+    [IgnoreDataMember]
+    public ReactiveCommand<Unit, Unit> SearchCommand { get; }
+
+    [IgnoreDataMember]
+    public ReactiveCommand<Unit, Unit> StopCommand { get; }
+
     private async void OnFolderSelectCommand()
+    {
+    }
+
+    private void OnStopCommand()
+    {
+        this.StopSearch();
+    }
+
+    private void StopSearch()
     {
         if (this.loadCancellationSource != null)
         {
             this.loadCancellationSource.Cancel();
-
-            this.LogRecords.Clear();
         }
+    }
 
+    private async void OnSearchCommand()
+    {
+        await this.DoSearch();
+    }
+
+    private async Task DoSearch()
+    {
+        this.StopSearch();
+
+        this.LogRecords.Clear();
 
         await this.loadEndEvent.WaitAsync();
         this.loadCancellationSource = new CancellationTokenSource();
@@ -55,9 +86,13 @@ public class MainViewModel : ViewModelBase
 
         var reader = new FileReader(folder, "*.*");
 
+        int countOfLoaded = 0;
         await foreach (var lr in reader.GetLogRecords().WithCancellation(this.loadCancellationSource.Token))
         {
             this.LogRecords.AddRange(lr);
+            countOfLoaded += lr.Count;
+
+            this.Status = $"Found {countOfLoaded} matching lines";
         }
 
         this.loadCancellationSource.Dispose();

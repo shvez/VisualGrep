@@ -14,20 +14,44 @@
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="30"/>
-            <RowDefinition Height="20"/>
-            <RowDefinition Height="20"/>
-            <RowDefinition Height="20"/>
+            <RowDefinition Height="35"/>
+            <RowDefinition Height="35"/>
+            <RowDefinition Height="35"/>
+            <RowDefinition Height="35"/>
             <RowDefinition Height="500"/>
             <RowDefinition Height="500"/>
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0" Orientation="Horizontal">
-            <Button Command="{Binding FolderSelectCommand}">
+            <Button Command="{Binding FolderSelectCommand}" Width="90">
                 Browse
             </Button>
             <ComboBox HorizontalAlignment="Stretch" Width="300"></ComboBox>
             <Button HorizontalAlignment="Right">..</Button>
             <CheckBox HorizontalAlignment="Right">Use Subfolders</CheckBox>
+        </StackPanel>
+        <StackPanel Grid.Row="1" Orientation="Horizontal">
+            <Button Command="{Binding FolderSelectCommand}" Width="90">
+                Files
+            </Button>
+            <ComboBox HorizontalAlignment="Stretch" Width="300"></ComboBox>
+            <Button HorizontalAlignment="Right">..</Button>
+            <CheckBox HorizontalAlignment="Right">Use Subfolders</CheckBox>
+        </StackPanel>
+        <StackPanel Grid.Row="2" Orientation="Horizontal">
+            <Button Command="{Binding FolderSelectCommand}" Width="90">
+                Text
+            </Button>
+            <ComboBox HorizontalAlignment="Stretch" Width="300"></ComboBox>
+            <Button HorizontalAlignment="Right">..</Button>
+            <CheckBox HorizontalAlignment="Right">Use Subfolders</CheckBox>
+        </StackPanel>
+        <StackPanel Grid.Row="3" Orientation="Horizontal">
+            <Button Command="{Binding  SearchCommand}">
+                Search
+            </Button>
+            <Button HorizontalAlignment="Right"  Command="{Binding StopCommand}">Stop</Button>
+            <CheckBox HorizontalAlignment="Right">Pause</CheckBox>
+            <TextBlock Text="{Binding Status}"></TextBlock>
         </StackPanel>
         <StackPanel Grid.Row="1" Orientation="Horizontal"/>
         <StackPanel Grid.Row="2" Orientation="Horizontal"/>
