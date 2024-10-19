@@ -1,10 +1,12 @@
 ﻿using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Runtime.Serialization;
+
 using DynamicData;
+
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
-
+using VisualGrep.Filter;
 using VisualGrep.Models;
 
 namespace VisualGrep.ViewModels;
@@ -13,6 +15,13 @@ public class MainViewModel : ViewModelBase
 {
     private CancellationTokenSource? loadCancellationSource;
     private SemaphoreSlim loadEndEvent = new SemaphoreSlim(1);
+
+    public bool IsFileListSet { get; set; } = true;
+
+    public bool IsFolderSet { get; set; } = true;
+
+    public bool IsFilterSet { get; set; } = true;
+
 
     public MainViewModel()
     {
@@ -32,6 +41,9 @@ public class MainViewModel : ViewModelBase
         this.StopCommand = ReactiveCommand.Create(this.OnStopCommand);
 
         this.Status = "text";
+
+        this.SearchFilter = "Plug.*\\.";
+        this.UseRegExp = true;
     }
 
     [Reactive]
@@ -39,6 +51,17 @@ public class MainViewModel : ViewModelBase
 
     [Reactive]
     public string Status { get; private set; }
+
+    [Reactive] 
+    public string FileFilter { get; private set; } = "*.*";
+
+    [Reactive] 
+    public string SearchFilter { get; private set; }
+
+    [Reactive] public bool IgnoreCase { get; private set; } = true;
+
+    [Reactive]
+    public bool UseRegExp { get; private set; }
 
     [Reactive]
     public LogRecord SelectedLogRecord { get; set; }
@@ -54,6 +77,11 @@ public class MainViewModel : ViewModelBase
 
     private async void OnFolderSelectCommand()
     {
+    }
+
+    public void OnSearchFilterTextInput(object sender, Avalonia.Input.TextInputEventArgs args)
+    {
+
     }
 
     private void OnStopCommand()
@@ -74,11 +102,26 @@ public class MainViewModel : ViewModelBase
         await this.DoSearch();
     }
 
+    private bool CheckSearchConditions()
+    {
+        return this.IsFolderSet && this.IsFileListSet && this.IsFilterSet;
+    }
+
     private async Task DoSearch()
     {
         this.StopSearch();
 
         this.LogRecords.Clear();
+
+        ISearchFilter filter;
+        if (this.UseRegExp)
+        {
+            filter = new RegExpFilter(this.SearchFilter, this.IgnoreCase);
+        }
+        else
+        {
+            filter = new SubStringFilter(this.SearchFilter, this.IgnoreCase);
+        }
 
         await this.loadEndEvent.WaitAsync();
         this.loadCancellationSource = new CancellationTokenSource();
@@ -87,7 +130,7 @@ public class MainViewModel : ViewModelBase
         var reader = new FileReader(folder, "*.*");
 
         int countOfLoaded = 0;
-        await foreach (var lr in reader.GetLogRecords().WithCancellation(this.loadCancellationSource.Token))
+        await foreach (var lr in reader.GetLogRecords(filter).WithCancellation(this.loadCancellationSource.Token))
         {
             this.LogRecords.AddRange(lr);
             countOfLoaded += lr.Count;

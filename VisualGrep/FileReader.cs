@@ -1,4 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
+using VisualGrep.Filter;
 using VisualGrep.Models;
 
 namespace VisualGrep
@@ -15,7 +16,7 @@ namespace VisualGrep
         }
 
 
-        public async IAsyncEnumerable<List<LogRecord>> GetLogRecords([EnumeratorCancellation] CancellationToken cancellationToken = default)
+        public async IAsyncEnumerable<List<LogRecord>> GetLogRecords(ISearchFilter filter, [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             var files = Directory.EnumerateFiles(this.path, this.fileMask);
 
@@ -47,12 +48,12 @@ namespace VisualGrep
                         records = new List<LogRecord>();
                     }
                     lineNumber++;
-                    records.Add(new LogRecord
+
+                    var lr = filter.Match(fileName, s, Convert.ToString(lineNumber++));
+                    if (lr != null)
                     {
-                        FileName = fileName,
-                        LineNumber = Convert.ToString(lineNumber++),
-                        Message = s,
-                    });
+                        records.Add(lr);
+                    }
                 }
 
                 if (records != null)

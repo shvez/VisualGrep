@@ -18,14 +18,14 @@
             <RowDefinition Height="35"/>
             <RowDefinition Height="35"/>
             <RowDefinition Height="35"/>
-            <RowDefinition Height="500"/>
+            <RowDefinition Height="700"/>
             <RowDefinition Height="500"/>
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0" Orientation="Horizontal">
-            <Button Command="{Binding FolderSelectCommand}" Width="90">
-                Browse
-            </Button>
-            <ComboBox HorizontalAlignment="Stretch" Width="300"></ComboBox>
+                <Button Command="{Binding FolderSelectCommand}" Width="90">
+                    Browse
+                </Button>
+                <ComboBox HorizontalAlignment="Stretch" Width="300"></ComboBox>
             <Button HorizontalAlignment="Right">..</Button>
             <CheckBox HorizontalAlignment="Right">Use Subfolders</CheckBox>
         </StackPanel>
@@ -33,7 +33,7 @@
             <Button Command="{Binding FolderSelectCommand}" Width="90">
                 Files
             </Button>
-            <ComboBox HorizontalAlignment="Stretch" Width="300"></ComboBox>
+            <ComboBox PlaceholderText="{Binding FileFilter}" HorizontalAlignment="Stretch" Width="300"></ComboBox>
             <Button HorizontalAlignment="Right">..</Button>
             <CheckBox HorizontalAlignment="Right">Use Subfolders</CheckBox>
         </StackPanel>
@@ -41,9 +41,17 @@
             <Button Command="{Binding FolderSelectCommand}" Width="90">
                 Text
             </Button>
-            <ComboBox HorizontalAlignment="Stretch" Width="300"></ComboBox>
-            <Button HorizontalAlignment="Right">..</Button>
-            <CheckBox HorizontalAlignment="Right">Use Subfolders</CheckBox>
+            <AutoCompleteBox 
+                            IsTextCompletionEnabled="True"
+                            FilterMode="Contains"
+                            Watermark="RegExp or sub string"
+                            HorizontalAlignment="Stretch" 
+                            Width="300"
+                            SearchText="{Binding SearchFilter}"
+                            >
+            </AutoCompleteBox>
+            <CheckBox HorizontalAlignment="Right" IsChecked="{Binding UseRegExp}">Use RegExp</CheckBox>
+            <CheckBox HorizontalAlignment="Right" IsChecked="{Binding IgnoreCase}">IgnoreCase</CheckBox>
         </StackPanel>
         <StackPanel Grid.Row="3" Orientation="Horizontal">
             <Button Command="{Binding  SearchCommand}">
