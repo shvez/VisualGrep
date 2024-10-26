@@ -148,7 +148,7 @@ public class MainViewModel : ViewModelBase
 
         await this.loadEndEvent.WaitAsync();
         this.loadCancellationSource = new CancellationTokenSource();
-        var folder = @"C:\_Work_\_EG_\POCs\VisualGrep\gcfra1022_log\";
+        var folder = this.Folder;
 
         var reader = new FileReader(folder, "*.*");
 
