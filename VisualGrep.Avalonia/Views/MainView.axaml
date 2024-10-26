@@ -22,44 +22,60 @@
             <RowDefinition Height="500"/>
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0" Orientation="Horizontal">
-                <Button Command="{Binding FolderSelectCommand}" Width="90">
+                <Button Margin="3,0,0,0" Command="{Binding FolderSelectCommand}" Width="90">
                     Browse
                 </Button>
-                <ComboBox HorizontalAlignment="Stretch" Width="300"></ComboBox>
-            <Button HorizontalAlignment="Right">..</Button>
-            <CheckBox HorizontalAlignment="Right">Use Subfolders</CheckBox>
+            <AutoCompleteBox  Margin="3,0,0,0"
+                            IsTextCompletionEnabled="True"
+                            FilterMode="Contains"
+                            Watermark="folder to search. current if empty"
+                            HorizontalAlignment="Stretch" 
+                            Width="1300"
+                            Text="{Binding Folder, Mode=TwoWay, UpdateSourceTrigger=LostFocus}}"
+                            >
+            </AutoCompleteBox>
+            <Button Margin="3,0,0,0" HorizontalAlignment="Right">..</Button>
+            <CheckBox Margin="3,0,0,0" HorizontalAlignment="Right">Use Subfolders</CheckBox>
         </StackPanel>
         <StackPanel Grid.Row="1" Orientation="Horizontal">
-            <Button Command="{Binding FolderSelectCommand}" Width="90">
+            <Button Margin="3,0,0,0" Command="{Binding FileSelectCommand}" Width="90">
                 Files
             </Button>
-            <ComboBox PlaceholderText="{Binding FileFilter}" HorizontalAlignment="Stretch" Width="300"></ComboBox>
-            <Button HorizontalAlignment="Right">..</Button>
-            <CheckBox HorizontalAlignment="Right">Use Subfolders</CheckBox>
+            <AutoCompleteBox  Margin="3,0,0,0"
+                            IsTextCompletionEnabled="True"
+                            FilterMode="Contains"
+                            Watermark="folder to search. current if empty"
+                            HorizontalAlignment="Stretch" 
+                            Width="1300"
+                            Text="{Binding FileFilter, Mode=TwoWay, UpdateSourceTrigger=LostFocus}}"
+                            >
+            </AutoCompleteBox>
+            <Button Margin="3,0,0,0" HorizontalAlignment="Right">..</Button>
+            <CheckBox Margin="3,0,0,0" HorizontalAlignment="Right">Use Subfolders</CheckBox>
         </StackPanel>
         <StackPanel Grid.Row="2" Orientation="Horizontal">
             <Button Command="{Binding FolderSelectCommand}" Width="90">
                 Text
             </Button>
-            <AutoCompleteBox 
+            <AutoCompleteBox Margin="3,0,0,0"
                             IsTextCompletionEnabled="True"
                             FilterMode="Contains"
                             Watermark="RegExp or sub string"
                             HorizontalAlignment="Stretch" 
                             Width="300"
-                            SearchText="{Binding SearchFilter}"
+                            Text="{Binding SearchFilter, Mode=TwoWay}"
                             >
             </AutoCompleteBox>
-            <CheckBox HorizontalAlignment="Right" IsChecked="{Binding UseRegExp}">Use RegExp</CheckBox>
-            <CheckBox HorizontalAlignment="Right" IsChecked="{Binding IgnoreCase}">IgnoreCase</CheckBox>
+            <CheckBox Margin="3,0,0,0" HorizontalAlignment="Right" IsChecked="{Binding UseRegExp}, Mode=TwoWay">Use RegExp</CheckBox>
+            <CheckBox Margin="3,0,0,0" HorizontalAlignment="Right" IsChecked="{Binding IgnoreCase, Mode=TwoWay}">IgnoreCase</CheckBox>
         </StackPanel>
         <StackPanel Grid.Row="3" Orientation="Horizontal">
-            <Button Command="{Binding  SearchCommand}">
+            <Button Command="{Binding  SearchCommand}" Margin="3,0,0,0">
                 Search
             </Button>
-            <Button HorizontalAlignment="Right"  Command="{Binding StopCommand}">Stop</Button>
-            <CheckBox HorizontalAlignment="Right">Pause</CheckBox>
-            <TextBlock Text="{Binding Status}"></TextBlock>
+            <Button HorizontalAlignment="Right"  Margin="3,0,0,0" Command="{Binding StopCommand}">Stop</Button>
+            <CheckBox HorizontalAlignment="Right" Margin="3,0,0,0">Pause</CheckBox>
+            <TextBlock Text="{Binding Status}" VerticalAlignment="Center" Margin="3,0,0,0"></TextBlock>
         </StackPanel>
         <StackPanel Grid.Row="1" Orientation="Horizontal"/>
         <StackPanel Grid.Row="2" Orientation="Horizontal"/>
@@ -75,10 +91,6 @@
                   VerticalAlignment="Stretch"
                   RowHeight="20"
                   >
-            <!--<DataGrid.Columns>
-                <DataGridTextColumn Header="First Name"  Binding="{Binding FileName}"/>
-                <DataGridTextColumn Header="Last Name" Binding="{Binding Message}" />
-            </DataGrid.Columns>-->
         </DataGrid>
         <DataGrid Grid.Row="5">
 
