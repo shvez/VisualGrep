@@ -1,7 +1,10 @@
-﻿using Avalonia;
+﻿using System;
+
+using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 
+using VisualGrep.Avalonia.Services;
 using VisualGrep.Avalonia.Views;
 using VisualGrep.ViewModels;
 
@@ -20,8 +23,16 @@ public partial class App : Application
         {
             desktop.MainWindow = new MainWindow
             {
-                DataContext = new MainViewModel()
             };
+            var folderSelectionService = new DesktopSelectFolderService(desktop.MainWindow, Environment.CurrentDirectory);
+            var fileSelectionService = new DesktopSelectFilesService(desktop.MainWindow, Environment.CurrentDirectory);
+
+            var view = new MainViewModel()
+            {
+                FolderSelectionService = folderSelectionService,
+                FileSelectionService = fileSelectionService
+            };
+            desktop.MainWindow.DataContext = view;
         }
         else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform)
         {

@@ -8,6 +8,7 @@ using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using VisualGrep.Filter;
 using VisualGrep.Models;
+using VisualGrep.Services;
 
 namespace VisualGrep.ViewModels;
 
@@ -37,7 +38,9 @@ public class MainViewModel : ViewModelBase
         ];
 
         this.FolderSelectCommand = ReactiveCommand.Create(this.OnFolderSelectCommand);
+        this.FileSelectCommand = ReactiveCommand.Create(this.OnFileSelectCommand);
         this.SearchCommand = ReactiveCommand.Create(this.OnSearchCommand);
+        this.StopCommand = ReactiveCommand.Create(this.OnStopCommand);
         this.StopCommand = ReactiveCommand.Create(this.OnStopCommand);
 
         this.Status = "text";
@@ -52,13 +55,17 @@ public class MainViewModel : ViewModelBase
     [Reactive]
     public string Status { get; private set; }
 
+    [Reactive]
+    public string Folder { get; private set; }
+
     [Reactive] 
     public string FileFilter { get; private set; } = "*.*";
 
     [Reactive] 
     public string SearchFilter { get; private set; }
 
-    [Reactive] public bool IgnoreCase { get; private set; } = true;
+    [Reactive] 
+    public bool IgnoreCase { get; private set; } = true;
 
     [Reactive]
     public bool UseRegExp { get; private set; }
@@ -70,18 +77,34 @@ public class MainViewModel : ViewModelBase
     public ReactiveCommand<Unit, Unit> FolderSelectCommand { get; }
 
     [IgnoreDataMember]
+    public ReactiveCommand<Unit, Unit> FileSelectCommand { get; }
+
+    [IgnoreDataMember]
     public ReactiveCommand<Unit, Unit> SearchCommand { get; }
 
     [IgnoreDataMember]
     public ReactiveCommand<Unit, Unit> StopCommand { get; }
+    public ISelectFolderService FolderSelectionService { get; set; }
+    public ISelectFilesService FileSelectionService { get; set; }
 
-    private async void OnFolderSelectCommand()
+    private void OnFolderSelectCommand()
     {
+        this.Folder = this.FolderSelectionService.GetFolder();
+        this.FileFilter = "*.*";
     }
 
-    public void OnSearchFilterTextInput(object sender, Avalonia.Input.TextInputEventArgs args)
+    private void OnFileSelectCommand()
     {
+        (this.Folder, var files) = this.FileSelectionService.GetFileList();
 
+        if (files.Count != 0)
+        {
+            this.FileFilter = string.Join(",", files);
+        }
+        else
+        {
+            this.FileFilter = "*.*";
+        }
     }
 
     private void OnStopCommand()
