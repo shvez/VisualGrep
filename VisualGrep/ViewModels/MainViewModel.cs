@@ -43,32 +43,31 @@ public class MainViewModel : ViewModelBase
         this.StopCommand = ReactiveCommand.Create(this.OnStopCommand);
         this.StopCommand = ReactiveCommand.Create(this.OnStopCommand);
 
-        this.Status = "text";
-
-        this.SearchFilter = "Plug.*\\.";
+        this.SearchFilter = "";
         this.UseRegExp = true;
+        this.Folder = Environment.CurrentDirectory;
     }
 
     [Reactive]
     public ObservableCollection<LogRecord> LogRecords { get; set; }
 
     [Reactive]
-    public string Status { get; private set; }
+    public string Status { get; set; } = "Ready";
 
     [Reactive]
-    public string Folder { get; private set; }
+    public string Folder { get; set; }
 
     [Reactive] 
-    public string FileFilter { get; private set; } = "*.*";
+    public string FileFilter { get; set; } = "*.*";
 
     [Reactive] 
-    public string SearchFilter { get; private set; }
+    public string SearchFilter { get; set; }
 
     [Reactive] 
-    public bool IgnoreCase { get; private set; } = true;
+    public bool IgnoreCase { get; set; } = true;
 
     [Reactive]
-    public bool UseRegExp { get; private set; }
+    public bool UseRegExp { get; set; }
 
     [Reactive]
     public LogRecord SelectedLogRecord { get; set; }
