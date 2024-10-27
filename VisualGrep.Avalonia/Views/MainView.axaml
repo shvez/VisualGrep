@@ -31,6 +31,8 @@
                             Watermark="folder to search. current if empty"
                             HorizontalAlignment="Stretch" 
                             Width="1300"
+                            DropDownOpened="AutoCompleteBox_OnDropDownOpened"
+                            TextChanged="AutoCompleteBox_OnTextChanged"
                             Text="{Binding Folder, Mode=TwoWay, UpdateSourceTrigger=LostFocus}}"
                             >
             </AutoCompleteBox>
@@ -38,15 +40,16 @@
             <CheckBox Margin="3,0,0,0" HorizontalAlignment="Right">Use Subfolders</CheckBox>
         </StackPanel>
         <StackPanel Grid.Row="1" Orientation="Horizontal">
-            <Button Margin="3,0,0,0" Command="{Binding FileSelectCommand}" Width="90">
+            <Button Margin="3,0,0,0" Command="{Binding Path=FileSelectCommand}" Width="90">
                 Files
             </Button>
             <AutoCompleteBox  Margin="3,0,0,0"
                             IsTextCompletionEnabled="True"
                             FilterMode="Contains"
-                            Watermark="folder to search. current if empty"
+                            Watermark="files to search. '*.*' if empty"
                             HorizontalAlignment="Stretch" 
                             Width="1300"
+                            TextChanged="FilesAutoCompleteBox_OnTextChanged"
                             Text="{Binding FileFilter, Mode=TwoWay, UpdateSourceTrigger=LostFocus}}"
                             >
             </AutoCompleteBox>
@@ -63,6 +66,8 @@
                             Watermark="RegExp or sub string"
                             HorizontalAlignment="Stretch" 
                             Width="300"
+                            TextChanged="RegExpAutoCompleteBox_OnTextChanged"
+                            KeyUp="RegExpInputElement_OnKeyUp"
                             Text="{Binding SearchFilter, Mode=TwoWay}"
                             >
             </AutoCompleteBox>

@@ -1,11 +1,13 @@
 ﻿using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Runtime.Serialization;
+using System.Text.RegularExpressions;
 
 using DynamicData;
 
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
+
 using VisualGrep.Filter;
 using VisualGrep.Models;
 using VisualGrep.Services;
@@ -56,7 +58,7 @@ public class MainViewModel : ViewModelBase
 
     [Reactive]
     public string Folder { get; set; }
-
+    
     [Reactive] 
     public string FileFilter { get; set; } = "*.*";
 
@@ -129,7 +131,7 @@ public class MainViewModel : ViewModelBase
         return this.IsFolderSet && this.IsFileListSet && this.IsFilterSet;
     }
 
-    private async Task DoSearch()
+    public async Task DoSearch()
     {
         this.StopSearch();
 
@@ -165,4 +167,18 @@ public class MainViewModel : ViewModelBase
         this.loadEndEvent.Release();
     }
 
+    public bool ValidateRegExpFilter()
+    {
+        try
+        {
+            var options = RegexOptions.Compiled | RegexOptions.Singleline;
+            var regex = new Regex(this.SearchFilter, options);
+        }
+        catch (Exception e)
+        {
+            this.Status = e.Message;
+            return false;
+        }
+        return true;
+    }
 }
