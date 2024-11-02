@@ -19,7 +19,7 @@
             <RowDefinition Height="35"/>
             <RowDefinition Height="35"/>
             <RowDefinition Height="700"/>
-            <RowDefinition Height="500"/>
+            <!--<RowDefinition Height="500"/>-->
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0" Orientation="Horizontal">
                 <Button Margin="3,0,0,0" Command="{Binding FolderSelectCommand}" Width="90">
@@ -32,8 +32,7 @@
                             HorizontalAlignment="Stretch" 
                             Width="1300"
                             DropDownOpened="AutoCompleteBox_OnDropDownOpened"
-                            TextChanged="AutoCompleteBox_OnTextChanged"
-                            Text="{Binding Folder, Mode=TwoWay, UpdateSourceTrigger=LostFocus}}"
+                            Text="{Binding Folder}"
                             >
             </AutoCompleteBox>
             <Button Margin="3,0,0,0" HorizontalAlignment="Right">..</Button>
@@ -49,8 +48,7 @@
                             Watermark="files to search. '*.*' if empty"
                             HorizontalAlignment="Stretch" 
                             Width="1300"
-                            TextChanged="FilesAutoCompleteBox_OnTextChanged"
-                            Text="{Binding FileFilter, Mode=TwoWay, UpdateSourceTrigger=LostFocus}}"
+                            Text="{Binding FileFilter}"
                             >
             </AutoCompleteBox>
             <Button Margin="3,0,0,0" HorizontalAlignment="Right">..</Button>
@@ -66,12 +64,11 @@
                             Watermark="RegExp or sub string"
                             HorizontalAlignment="Stretch" 
                             Width="300"
-                            TextChanged="RegExpAutoCompleteBox_OnTextChanged"
                             KeyUp="RegExpInputElement_OnKeyUp"
                             Text="{Binding SearchFilter, Mode=TwoWay}"
                             >
             </AutoCompleteBox>
-            <CheckBox Margin="3,0,0,0" HorizontalAlignment="Right" IsChecked="{Binding UseRegExp}, Mode=TwoWay">Use RegExp</CheckBox>
+            <CheckBox Margin="3,0,0,0" HorizontalAlignment="Right" IsChecked="{Binding UseRegExp}">Use RegExp</CheckBox>
             <CheckBox Margin="3,0,0,0" HorizontalAlignment="Right" IsChecked="{Binding IgnoreCase, Mode=TwoWay}">IgnoreCase</CheckBox>
         </StackPanel>
         <StackPanel Grid.Row="3" Orientation="Horizontal">
@@ -82,9 +79,6 @@
             <CheckBox HorizontalAlignment="Right" Margin="3,0,0,0">Pause</CheckBox>
             <TextBlock Text="{Binding Status}" VerticalAlignment="Center" Margin="3,0,0,0"></TextBlock>
         </StackPanel>
-        <StackPanel Grid.Row="1" Orientation="Horizontal"/>
-        <StackPanel Grid.Row="2" Orientation="Horizontal"/>
-        <StackPanel Grid.Row="3" Orientation="Horizontal"/>
         <DataGrid Grid.Row="4" 
                   AutoGenerateColumns="True" 
                   IsReadOnly="True"
@@ -95,10 +89,8 @@
                   HorizontalAlignment="Stretch"
                   VerticalAlignment="Stretch"
                   RowHeight="20"
+                  Background="Aqua"
                   >
-        </DataGrid>
-        <DataGrid Grid.Row="5">
-
         </DataGrid>
     </Grid>
 </UserControl>
