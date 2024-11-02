@@ -2,6 +2,6 @@
 {
     public interface ISelectFolderService
     {
-        string? GetFolder();
+        string GetFolder();
     }
 }
