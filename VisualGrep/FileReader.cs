@@ -28,7 +28,9 @@ namespace VisualGrep
                 }
 
                 var lineNumber = 0;
-                using StreamReader sr = File.OpenText(fileName);
+                var shortFileName = Path.GetFileName(fileName);
+                using var sr = File.OpenText(fileName);
+
                 string? s;
                 List<LogRecord>? records = null;
                 while ((s = await sr.ReadLineAsync(cancellationToken)) != null)
@@ -49,7 +51,7 @@ namespace VisualGrep
                     }
                     lineNumber++;
 
-                    var lr = filter.Match(fileName, s, Convert.ToString(lineNumber++));
+                    var lr = filter.Match(shortFileName, s, Convert.ToString(lineNumber++));
                     if (lr != null)
                     {
                         records.Add(lr);
