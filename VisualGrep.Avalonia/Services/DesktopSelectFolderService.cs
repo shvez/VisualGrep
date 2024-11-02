@@ -29,7 +29,7 @@ namespace VisualGrep.Avalonia.Services
                 return Environment.CurrentDirectory;
             }
 
-            this.lastFolder = result[0].Path.ToString();
+            this.lastFolder = result[0].TryGetLocalPath();
 
             return this.lastFolder;
         }
