@@ -17,7 +17,7 @@ namespace VisualGrep.ViewModels;
 public class MainViewModel : ViewModelBase
 {
     private CancellationTokenSource? loadCancellationSource;
-    private SemaphoreSlim loadEndEvent = new SemaphoreSlim(1);
+    private readonly SemaphoreSlim loadEndEvent = new SemaphoreSlim(1);
 
     public bool IsFileListSet { get; set; } = true;
 
@@ -72,7 +72,7 @@ public class MainViewModel : ViewModelBase
     public bool UseRegExp { get; set; }
 
     [Reactive]
-    public LogRecord SelectedLogRecord { get; set; }
+    public LogRecord? SelectedLogRecord { get; set; }
 
     [IgnoreDataMember]
     public ReactiveCommand<Unit, Unit> FolderSelectCommand { get; }
@@ -85,27 +85,30 @@ public class MainViewModel : ViewModelBase
 
     [IgnoreDataMember]
     public ReactiveCommand<Unit, Unit> StopCommand { get; }
-    public ISelectFolderService FolderSelectionService { get; set; }
-    public ISelectFilesService FileSelectionService { get; set; }
+    public ISelectFolderService? FolderSelectionService { get; set; }
+    public ISelectFilesService? FileSelectionService { get; set; }
 
     private void OnFolderSelectCommand()
     {
+        if (this.FolderSelectionService == null)
+        {
+            return;
+        }
+
         this.Folder = this.FolderSelectionService.GetFolder();
         this.FileFilter = "*.*";
     }
 
     private void OnFileSelectCommand()
     {
+        if (this.FileSelectionService == null)
+        {
+            return;
+        }
+
         (this.Folder, var files) = this.FileSelectionService.GetFileList();
 
-        if (files.Count != 0)
-        {
-            this.FileFilter = string.Join(",", files);
-        }
-        else
-        {
-            this.FileFilter = "*.*";
-        }
+        this.FileFilter = files.Count != 0 ? string.Join(",", files) : "*.*";
     }
 
     private void OnStopCommand()
@@ -124,11 +127,6 @@ public class MainViewModel : ViewModelBase
     private async void OnSearchCommand()
     {
         await this.DoSearch();
-    }
-
-    private bool CheckSearchConditions()
-    {
-        return this.IsFolderSet && this.IsFileListSet && this.IsFilterSet;
     }
 
     public async Task DoSearch()
@@ -172,7 +170,7 @@ public class MainViewModel : ViewModelBase
         try
         {
             var options = RegexOptions.Compiled | RegexOptions.Singleline;
-            var regex = new Regex(this.SearchFilter, options);
+            _ = new Regex(this.SearchFilter, options);
         }
         catch (Exception e)
         {

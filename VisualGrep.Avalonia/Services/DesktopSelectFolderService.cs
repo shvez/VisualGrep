@@ -16,20 +16,22 @@ namespace VisualGrep.Avalonia.Services
             this.lastFolder = currentDirectory;
         }
 
-        public string GetFolder()
+        public string? GetFolder()
         {
-            var options = new FolderPickerOpenOptions();
-            options.Title = "Select Folder";
-            options.AllowMultiple = false;
-            options.SuggestedStartLocation = window.StorageProvider.TryGetFolderFromPathAsync(this.lastFolder).GetAwaiter().GetResult();
-            var result = window.StorageProvider.OpenFolderPickerAsync(options).GetAwaiter().GetResult();
+            var options = new FolderPickerOpenOptions
+            {
+                Title = "Select Folder",
+                AllowMultiple = false,
+                SuggestedStartLocation = this.window.StorageProvider.TryGetFolderFromPathAsync(this.lastFolder).GetAwaiter().GetResult()
+            };
+            var result = this.window.StorageProvider.OpenFolderPickerAsync(options).GetAwaiter().GetResult();
 
-            if (result == null)
+            if (result.Count == 0)
             {
                 return Environment.CurrentDirectory;
             }
 
-            this.lastFolder = result[0].TryGetLocalPath();
+            this.lastFolder = result[0].TryGetLocalPath() ?? this.lastFolder;
 
             return this.lastFolder;
         }

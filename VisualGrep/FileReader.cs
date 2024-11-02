@@ -32,7 +32,7 @@ namespace VisualGrep
                 using var sr = File.OpenText(fileName);
 
                 string? s;
-                List<LogRecord>? records = null;
+                List<LogRecord> records = new List<LogRecord>();
                 while ((s = await sr.ReadLineAsync(cancellationToken)) != null)
                 {
                     if (cancellationToken.IsCancellationRequested)
@@ -42,12 +42,12 @@ namespace VisualGrep
 
                     if (lineNumber % 100 == 0)
                     {
-                        if (records != null)
+                        if (records.Count > 0)
                         {
                             yield return records;
-                        }
 
-                        records = new List<LogRecord>();
+                            records = [];
+                        }
                     }
                     lineNumber++;
 
@@ -58,7 +58,7 @@ namespace VisualGrep
                     }
                 }
 
-                if (records != null)
+                if (records.Count > 0)
                 {
                     yield return records;
                 }

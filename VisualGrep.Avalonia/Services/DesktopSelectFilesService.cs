@@ -12,7 +12,7 @@ namespace VisualGrep.Avalonia.Services
     internal class DesktopSelectFilesService : ISelectFilesService
     {
         private readonly Window window;
-        private string initialDirectory;
+        private readonly string initialDirectory;
 
         public DesktopSelectFilesService(Window window, string initialDirectory)
         {
@@ -27,13 +27,13 @@ namespace VisualGrep.Avalonia.Services
                 SuggestedStartLocation = this.window.StorageProvider.TryGetFolderFromPathAsync(this.initialDirectory).GetAwaiter().GetResult(),
             }).GetAwaiter().GetResult();
 
-            if (result == null || result.Count == 0)
+            if (result.Count == 0)
             {
                 return (this.initialDirectory, new List<string>());
             }
 
             var files = result.Select(x => x.Path.ToString()).ToList();
-            var resultDirectory = Path.GetDirectoryName(files.First());
+            var resultDirectory = Path.GetDirectoryName(files.First()) ?? this.initialDirectory;
 
             for(int i = 0; i < files.Count; i++)
             {

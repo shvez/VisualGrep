@@ -31,14 +31,13 @@ public partial class MainView : UserControl
     {
     }
 
-    private void RegExpInputElement_OnKeyUp(object? sender, KeyEventArgs e)
+    private async void RegExpInputElement_OnKeyUp(object? sender, KeyEventArgs e)
     {
         if (e.Key == Key.Enter)
         {
-            var model = this.DataContext as MainViewModel;
-            if (model.ValidateRegExpFilter())
+            if (this.DataContext is MainViewModel model && model.ValidateRegExpFilter())
             {
-                 model.DoSearch();
+                 await model.DoSearch();
             }
         }
     }
