@@ -116,7 +116,7 @@ public class MainViewModel : ViewModelBase
         this.StopSearch();
     }
 
-    private void StopSearch()
+    public void StopSearch()
     {
         if (this.loadCancellationSource != null)
         {

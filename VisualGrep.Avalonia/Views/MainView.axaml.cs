@@ -17,16 +17,6 @@ public partial class MainView : UserControl
         
     }
 
-    private void AutoCompleteBox_OnTextChanged(object? sender, TextChangedEventArgs e)
-    {
-        
-    }
-
-    private void RegExpAutoCompleteBox_OnTextChanged(object? sender, TextChangedEventArgs e)
-    {
-        this.BringIntoView();
-    }
-
     private void FilesAutoCompleteBox_OnTextChanged(object? sender, TextChangedEventArgs e)
     {
     }
@@ -40,5 +30,20 @@ public partial class MainView : UserControl
                  await model.DoSearch();
             }
         }
+    }
+
+    protected override void OnKeyUp(KeyEventArgs e)
+    {
+        if (e.Key == Key.Escape)
+        {
+            if (this.DataContext is MainViewModel model)
+            {
+                model.StopSearch();
+            }
+
+            return;
+        }
+
+        base.OnKeyUp(e);
     }
 }
