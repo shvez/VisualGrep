@@ -17,7 +17,7 @@ namespace VisualGrep.ViewModels;
 public class MainViewModel : ViewModelBase
 {
     private CancellationTokenSource? loadCancellationSource;
-    private SemaphoreSlim loadEndEvent = new SemaphoreSlim(1);
+    private readonly SemaphoreSlim loadEndEvent = new SemaphoreSlim(1);
 
     public bool IsFileListSet { get; set; } = true;
 
@@ -57,7 +57,7 @@ public class MainViewModel : ViewModelBase
     public string Status { get; set; } = "Ready";
 
     [Reactive]
-    public string Folder { get; set; }
+    public string? Folder { get; set; }
     
     [Reactive] 
     public string FileFilter { get; set; } = "*.*";
@@ -72,7 +72,7 @@ public class MainViewModel : ViewModelBase
     public bool UseRegExp { get; set; }
 
     [Reactive]
-    public LogRecord SelectedLogRecord { get; set; }
+    public LogRecord? SelectedLogRecord { get; set; }
 
     [IgnoreDataMember]
     public ReactiveCommand<Unit, Unit> FolderSelectCommand { get; }
@@ -85,17 +85,25 @@ public class MainViewModel : ViewModelBase
 
     [IgnoreDataMember]
     public ReactiveCommand<Unit, Unit> StopCommand { get; }
-    public ISelectFolderService FolderSelectionService { get; set; }
-    public ISelectFilesService FileSelectionService { get; set; }
+    public ISelectFolderService? FolderSelectionService { get; set; }
+    public ISelectFilesService? FileSelectionService { get; set; }
 
     private void OnFolderSelectCommand()
     {
-        this.Folder = this.FolderSelectionService.GetFolder();
-        this.FileFilter = "*.*";
+        if (this.FolderSelectionService != null)
+        {
+            this.Folder = this.FolderSelectionService.GetFolder();
+            this.FileFilter = "*.*";
+        }
     }
 
     private void OnFileSelectCommand()
     {
+        if (this.FileSelectionService == null)
+        {
+            return;
+        }
+
         (this.Folder, var files) = this.FileSelectionService.GetFileList();
 
         if (files.Count != 0)
@@ -126,11 +134,6 @@ public class MainViewModel : ViewModelBase
         await this.DoSearch();
     }
 
-    private bool CheckSearchConditions()
-    {
-        return this.IsFolderSet && this.IsFileListSet && this.IsFilterSet;
-    }
-
     public async Task DoSearch()
     {
         this.StopSearch();
@@ -149,7 +152,7 @@ public class MainViewModel : ViewModelBase
 
         await this.loadEndEvent.WaitAsync();
         this.loadCancellationSource = new CancellationTokenSource();
-        var folder = this.Folder;
+        var folder = this.Folder ?? Environment.CurrentDirectory;
 
         var reader = new FileReader(folder, "*.*");
 
@@ -172,7 +175,7 @@ public class MainViewModel : ViewModelBase
         try
         {
             var options = RegexOptions.Compiled | RegexOptions.Singleline;
-            var regex = new Regex(this.SearchFilter, options);
+            _ = new Regex(this.SearchFilter, options);
         }
         catch (Exception e)
         {
