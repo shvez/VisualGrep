@@ -18,8 +18,7 @@
             <RowDefinition Height="35"/>
             <RowDefinition Height="35"/>
             <RowDefinition Height="35"/>
-            <RowDefinition Height="700"/>
-            <!--<RowDefinition Height="500"/>-->
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0" Orientation="Horizontal">
                 <Button Margin="3,0,0,0" Command="{Binding FolderSelectCommand}" Width="90">
@@ -30,13 +29,15 @@
                             FilterMode="Contains"
                             Watermark="folder to search. current if empty"
                             HorizontalAlignment="Stretch" 
-                            Width="1300"
+                            Width="700"
                             DropDownOpened="AutoCompleteBox_OnDropDownOpened"
                             Text="{Binding Folder}"
                             >
             </AutoCompleteBox>
-            <Button Margin="3,0,0,0" HorizontalAlignment="Right">..</Button>
-            <CheckBox Margin="3,0,0,0" HorizontalAlignment="Right">Use Subfolders</CheckBox>
+            <Button Name="ButtonUp" Margin="3,0,0,0" 
+                    HorizontalAlignment="Right">..</Button>
+            <CheckBox Name="SubFoldersCheckBox" Margin="3,0,0,0" 
+                      HorizontalAlignment="Right">Use Subfolders</CheckBox>
         </StackPanel>
         <StackPanel Grid.Row="1" Orientation="Horizontal">
             <Button Margin="3,0,0,0" Command="{Binding Path=FileSelectCommand}" Width="90">
@@ -47,12 +48,11 @@
                             FilterMode="Contains"
                             Watermark="files to search. '*.*' if empty"
                             HorizontalAlignment="Stretch" 
-                            Width="1300"
+                            Width="700"
                             Text="{Binding FileFilter}"
                             >
             </AutoCompleteBox>
-            <Button Margin="3,0,0,0" HorizontalAlignment="Right">..</Button>
-            <CheckBox Margin="3,0,0,0" HorizontalAlignment="Right">Use Subfolders</CheckBox>
+            <CheckBox Margin="3,0,0,0" HorizontalAlignment="Right">Use RegEx</CheckBox>
         </StackPanel>
         <StackPanel Grid.Row="2" Orientation="Horizontal">
             <Button Command="{Binding FolderSelectCommand}" Width="90">
@@ -63,7 +63,7 @@
                             FilterMode="Contains"
                             Watermark="RegExp or sub string"
                             HorizontalAlignment="Stretch" 
-                            Width="300"
+                            Width="700"
                             KeyUp="RegExpInputElement_OnKeyUp"
                             Text="{Binding SearchFilter, Mode=TwoWay}"
                             >
@@ -79,18 +79,17 @@
             <CheckBox HorizontalAlignment="Right" Margin="3,0,0,0">Pause</CheckBox>
             <TextBlock Text="{Binding Status}" VerticalAlignment="Center" Margin="3,0,0,0"></TextBlock>
         </StackPanel>
-        <DataGrid Grid.Row="4" 
-                  AutoGenerateColumns="True" 
-                  IsReadOnly="True"
-                  GridLinesVisibility="All"
-                  BorderThickness="1"
-                  ItemsSource="{Binding LogRecords}" 
-                  SelectedItem="{Binding SelectedLogRecord}"
-                  HorizontalAlignment="Stretch"
-                  VerticalAlignment="Stretch"
-                  RowHeight="20"
-                  Background="Aqua"
-                  >
+        <DataGrid Name="DataGridControl" Grid.Row="4" 
+                      AutoGenerateColumns="True" 
+                      IsReadOnly="True"
+                      GridLinesVisibility="All"
+                      BorderThickness="1"
+                      ItemsSource="{Binding LogRecords}" 
+                      SelectedItem="{Binding SelectedLogRecord}"
+                      HorizontalAlignment="Stretch"
+                      VerticalAlignment="Stretch"
+                      RowHeight="20"
+            >
         </DataGrid>
     </Grid>
 </UserControl>

@@ -1,6 +1,8 @@
 ﻿using System;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Media.TextFormatting;
 using VisualGrep.ViewModels;
 
 namespace VisualGrep.Avalonia.Views;
@@ -45,5 +47,13 @@ public partial class MainView : UserControl
         }
 
         base.OnKeyUp(e);
+    }
+
+    protected override void OnSizeChanged(SizeChangedEventArgs e)
+    {
+        base.OnSizeChanged(e);
+
+
+//        this.ButtonUp. = new Rect(); //e.NewSize.Width - this.ButtonUp.Bounds.Width;
     }
 }
