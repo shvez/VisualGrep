@@ -1,8 +1,8 @@
 ﻿using System;
-using Avalonia;
+
 using Avalonia.Controls;
 using Avalonia.Input;
-using Avalonia.Media.TextFormatting;
+
 using VisualGrep.ViewModels;
 
 namespace VisualGrep.Avalonia.Views;
