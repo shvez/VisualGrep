@@ -124,9 +124,9 @@ public class MainViewModel : ViewModelBase
         }
     }
 
-    private async void OnSearchCommand()
+    private void OnSearchCommand()
     {
-        await this.DoSearch();
+        _ = this.DoSearch();
     }
 
     public async Task DoSearch()
