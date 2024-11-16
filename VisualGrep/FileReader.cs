@@ -28,19 +28,28 @@ namespace VisualGrep
                 }
 
                 var lineNumber = 0;
+                var matchesCount = 0;
                 var shortFileName = Path.GetFileName(fileName);
                 using var sr = File.OpenText(fileName);
 
                 string? s;
                 List<LogRecord> records = new List<LogRecord>();
+                var firstRecord = new LogRecord()
+                {
+                    FileName = shortFileName,
+                    LineNumber = "-",
+                    Message = $"found {matchesCount} matches in {lineNumber} lines"
+                };
+                records.Add(firstRecord);
                 while ((s = await sr.ReadLineAsync(cancellationToken)) != null)
                 {
                     if (cancellationToken.IsCancellationRequested)
                     {
+                        firstRecord.Message = $"found {matchesCount} matches in {lineNumber} lines";
                         yield break;
                     }
 
-                    if (lineNumber % 100 == 0)
+                    if (lineNumber % 500 == 0)
                     {
                         if (records.Count > 0)
                         {
@@ -49,14 +58,16 @@ namespace VisualGrep
                             records = [];
                         }
                     }
-                    lineNumber++;
 
                     var lr = filter.Match(shortFileName, s, Convert.ToString(lineNumber++));
                     if (lr != null)
                     {
+                        ++matchesCount;
                         records.Add(lr);
                     }
                 }
+
+                firstRecord.Message = $"found {matchesCount} matches in {lineNumber} lines";
 
                 if (records.Count > 0)
                 {
