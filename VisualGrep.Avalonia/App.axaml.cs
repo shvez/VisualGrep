@@ -24,15 +24,17 @@ public partial class App : Application
             desktop.MainWindow = new MainWindow
             {
             };
+
             var folderSelectionService = new DesktopSelectFolderService(desktop.MainWindow, Environment.CurrentDirectory);
             var fileSelectionService = new DesktopSelectFilesService(desktop.MainWindow, Environment.CurrentDirectory);
 
-            var view = new MainViewModel()
+            var view = new MainViewModel
             {
                 FolderSelectionService = folderSelectionService,
                 FileSelectionService = fileSelectionService
             };
             desktop.MainWindow.DataContext = view;
+
         }
         else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform)
         {

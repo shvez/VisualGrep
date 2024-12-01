@@ -1,4 +1,5 @@
-<UserControl xmlns="https://github.com/avaloniaui"
+<UserControl Name="MainViewControl" 
+             xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -58,13 +59,13 @@
             <Button Command="{Binding FolderSelectCommand}" Width="90">
                 Text
             </Button>
-            <AutoCompleteBox Margin="3,0,0,0"
+            <AutoCompleteBox Name="RegExpTextBox" 
+                             Margin="3,0,0,0"
                             IsTextCompletionEnabled="True"
                             FilterMode="Contains"
                             Watermark="RegExp or sub string"
                             HorizontalAlignment="Stretch" 
                             Width="700"
-                            KeyUp="RegExpInputElement_OnKeyUp"
                             Text="{Binding SearchFilter, Mode=TwoWay}"
                             >
             </AutoCompleteBox>

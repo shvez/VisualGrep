@@ -88,6 +88,8 @@ public class MainViewModel : ViewModelBase
     public ISelectFolderService? FolderSelectionService { get; set; }
     public ISelectFilesService? FileSelectionService { get; set; }
 
+    public IDataGrid DataGridService { get; set; }
+
     private void OnFolderSelectCommand()
     {
         if (this.FolderSelectionService == null)
@@ -150,6 +152,8 @@ public class MainViewModel : ViewModelBase
         var folder = this.Folder;
 
         var reader = new FileReader(folder, "*.*");
+
+        this.DataGridService.AddColumns(["File", "Line", "Message"]);
 
         int countOfLoaded = 0;
         await foreach (var lr in reader.GetLogRecords(filter).WithCancellation(this.loadCancellationSource.Token))
