@@ -4,7 +4,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:VisualGrep.ViewModels;assembly=VisualGrep"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="800"
              x:Class="VisualGrep.Avalonia.Views.MainView"
              x:DataType="vm:MainViewModel">
   <Design.DataContext>
@@ -21,42 +21,54 @@
             <RowDefinition Height="35"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <StackPanel Grid.Row="0" Orientation="Horizontal">
-                <Button Margin="3,0,0,0" Command="{Binding FolderSelectCommand}" Width="90">
+        <RelativePanel Grid.Row="0">
+                <Button 
+                        Name="BrowseFiles"
+                        Margin="3,0,0,0" 
+                        Command="{Binding FolderSelectCommand}" 
+                        Width="90">
                     Browse
                 </Button>
             <AutoCompleteBox  Margin="3,0,0,0"
                             IsTextCompletionEnabled="True"
+                            MinWidth="500"
                             FilterMode="Contains"
                             Watermark="folder to search. current if empty"
-                            HorizontalAlignment="Stretch" 
-                            Width="700"
                             DropDownOpened="AutoCompleteBox_OnDropDownOpened"
                             Text="{Binding Folder}"
+                            RelativePanel.RightOf="BrowseFiles"
+                            RelativePanel.AlignRightWith="AlignRect"
+                            Name="FolderToSearch"
                             >
             </AutoCompleteBox>
+            <Rectangle Name="AlignRect" RelativePanel.LeftOf="ButtonUp"/>
             <Button Name="ButtonUp" Margin="3,0,0,0" 
-                    HorizontalAlignment="Right">..</Button>
-            <CheckBox Name="SubFoldersCheckBox" Margin="3,0,0,0" 
-                      HorizontalAlignment="Right">Use Subfolders</CheckBox>
-        </StackPanel>
-        <StackPanel Grid.Row="1" Orientation="Horizontal">
-            <Button Margin="3,0,0,0" Command="{Binding Path=FileSelectCommand}" Width="90">
+                    RelativePanel.LeftOf="SubFoldersCheckBox" >..</Button>
+            <CheckBox Name="SubFoldersCheckBox" Margin="3,0,3,0" 
+                      RelativePanel.AlignRightWithPanel="True"
+                      >Use Subfolders</CheckBox>
+        </RelativePanel>
+        <RelativePanel Grid.Row="1">
+            <Button Name="SelectFilesBtn" Margin="3,0,0,0" Command="{Binding Path=FileSelectCommand}" Width="90">
                 Files
             </Button>
             <AutoCompleteBox  Margin="3,0,0,0"
                             IsTextCompletionEnabled="True"
                             FilterMode="Contains"
                             Watermark="files to search. '*.*' if empty"
-                            HorizontalAlignment="Stretch" 
-                            Width="700"
+                            MinWidth="500"
                             Text="{Binding FileFilter}"
+                            RelativePanel.RightOf="SelectFilesBtn"
+                            RelativePanel.AlignRightWith="AlignRect2"
+                            Name="FilesToSearchCombo"
                             >
             </AutoCompleteBox>
-            <CheckBox Margin="3,0,0,0" HorizontalAlignment="Right">Use RegEx</CheckBox>
-        </StackPanel>
-        <StackPanel Grid.Row="2" Orientation="Horizontal">
-            <Button Command="{Binding FolderSelectCommand}" Width="90">
+            <Rectangle Name="AlignRect2" RelativePanel.LeftOf="UseRegExCheckBox"/>
+            <CheckBox Name="UseRegExCheckBox" Margin="3,0,3,0" 
+                      RelativePanel.AlignRightWithPanel="True">Use RegEx</CheckBox>
+        </RelativePanel>
+        <RelativePanel Grid.Row="2">
+            <Button Name="TextButton" Command="{Binding FolderSelectCommand}" Width="90">
                 Text
             </Button>
             <AutoCompleteBox Name="RegExpTextBox" 
@@ -64,33 +76,57 @@
                             IsTextCompletionEnabled="True"
                             FilterMode="Contains"
                             Watermark="RegExp or sub string"
-                            HorizontalAlignment="Stretch" 
-                            Width="700"
+                            MinWidth="500"
                             Text="{Binding SearchFilter, Mode=TwoWay}"
+                            RelativePanel.RightOf="TextButton"
+                             RelativePanel.AlignRightWith="AlignRect3"
                             >
             </AutoCompleteBox>
-            <CheckBox Margin="3,0,0,0" HorizontalAlignment="Right" IsChecked="{Binding UseRegExp}">Use RegExp</CheckBox>
-            <CheckBox Margin="3,0,0,0" HorizontalAlignment="Right" IsChecked="{Binding IgnoreCase, Mode=TwoWay}">IgnoreCase</CheckBox>
-        </StackPanel>
-        <StackPanel Grid.Row="3" Orientation="Horizontal">
-            <Button Command="{Binding  SearchCommand}" Margin="3,0,0,0">
+            <Rectangle Name="AlignRect3" RelativePanel.LeftOf="UseRegExpInTextCheckBox"/>
+            <CheckBox 
+                Name="UseRegExpInTextCheckBox"
+                RelativePanel.LeftOf="IgnoreCaseCheckBox"
+                        Margin="3,0,3,0" 
+                      IsChecked="{Binding UseRegExp}">Use RegExp</CheckBox>
+            <CheckBox 
+                Name="IgnoreCaseCheckBox"
+                RelativePanel.AlignRightWithPanel="True"
+                    Margin="3,0,3,0" 
+                      IsChecked="{Binding IgnoreCase, Mode=TwoWay}">IgnoreCase</CheckBox>
+        </RelativePanel>
+        <RelativePanel Grid.Row="3">
+            <Button Name="SearchButton" Command="{Binding  SearchCommand}" Margin="3,0,0,0">
                 Search
             </Button>
-            <Button HorizontalAlignment="Right"  Margin="3,0,0,0" Command="{Binding StopCommand}">Stop</Button>
-            <CheckBox HorizontalAlignment="Right" Margin="3,0,0,0">Pause</CheckBox>
-            <TextBlock Text="{Binding Status}" VerticalAlignment="Center" Margin="3,0,0,0"></TextBlock>
-        </StackPanel>
-        <DataGrid Name="DataGridControl" Grid.Row="4" 
+            <Button Name="StopButton"
+                    RelativePanel.RightOf="SearchButton" 
+                    Margin="3,0,0,0" Command="{Binding StopCommand}">Stop</Button>
+            <CheckBox Name="PauseCheckBox" 
+                      RelativePanel.RightOf="StopButton" 
+                      HorizontalAlignment="Right" Margin="3,0,0,0">Pause</CheckBox>
+            <TextBlock RelativePanel.RightOf="PauseCheckBox" 
+                       RelativePanel.AlignRightWithPanel="True"
+                       RelativePanel.AlignBottomWith="PauseCheckBox"
+                       Text="{Binding Status}" 
+                       Margin="3,0,0,0"/>
+        </RelativePanel>
+        <RelativePanel Grid.Row="4">
+            <DataGrid Name="DataGridControl"  
                       AutoGenerateColumns="True" 
                       IsReadOnly="True"
                       GridLinesVisibility="All"
                       BorderThickness="1"
                       ItemsSource="{Binding LogRecords}" 
                       SelectedItem="{Binding SelectedLogRecord}"
-                      HorizontalAlignment="Stretch"
-                      VerticalAlignment="Stretch"
                       RowHeight="20"
+                      RelativePanel.AlignBottomWithPanel="True"
+                      RelativePanel.AlignTopWithPanel="True"
+                      RelativePanel.AlignRightWithPanel="True"
+                      RelativePanel.AlignLeftWithPanel="True"
+                      Margin="3,3,3,3"
             >
-        </DataGrid>
+            </DataGrid>
+
+        </RelativePanel>
     </Grid>
 </UserControl>
