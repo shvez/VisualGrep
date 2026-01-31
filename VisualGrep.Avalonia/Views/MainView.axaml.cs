@@ -106,7 +106,6 @@ public partial class MainView : UserControl, IDataGrid
                 Header = columnName,
                 Binding = new Binding($"AdditionalInfo[{columnName}]"),
                 CanUserResize = true,
-//                Width = new DataGridLength(30, DataGridLengthUnitType.Star)
             });
         }
     }
