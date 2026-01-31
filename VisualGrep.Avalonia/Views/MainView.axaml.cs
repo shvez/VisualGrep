@@ -15,7 +15,7 @@ namespace VisualGrep.Avalonia.Views;
 
 public partial class MainView : UserControl, IDataGrid
 {
-    private ObservableCollection<LogRecord> logRecords;
+    private ReadOnlyObservableCollection<LogRecord> logRecords;
 
     public MainView()
     {
@@ -88,7 +88,6 @@ public partial class MainView : UserControl, IDataGrid
     public void Clear()
     {
         this.DataGridControl.Columns.Clear();
-        this.logRecords.Clear();
     }
 
     public void AddEntries(LogRecord[] entries)
@@ -101,12 +100,13 @@ public partial class MainView : UserControl, IDataGrid
 
     public int AddEntry(LogRecord entry)
     {
-        this.logRecords.Add(entry);
-        return this.logRecords.Count - 1;
-    }
+     //   this.logRecords.Add(entry);
+//        return this.logRecords.Count - 1;
+        return 0;
+  }
 
     public void ModifyEntry(int pos, LogRecord entry)
     {
-        this.logRecords[pos] = entry;
+//        this.logRecords[pos] = entry;
     }
 }

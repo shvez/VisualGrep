@@ -20,6 +20,8 @@ namespace VisualGrep
         {
             var files = Directory.EnumerateFiles(this.path, this.fileMask);
 
+            List<LogRecord> records = new List<LogRecord>(100_000);
+
             foreach (var fileName in files)
             {
                 if (cancellationToken.IsCancellationRequested)
@@ -32,8 +34,7 @@ namespace VisualGrep
                 var shortFileName = Path.GetFileName(fileName);
                 using var sr = File.OpenText(fileName);
 
-                string? s;
-                List<LogRecord> records = new List<LogRecord>();
+                records.Clear();
                 var firstRecord = new LogRecord()
                 {
                     FileName = shortFileName,
@@ -41,22 +42,12 @@ namespace VisualGrep
                     Message = $"found {matchesCount} matches in {lineNumber} lines"
                 };
                 records.Add(firstRecord);
-                while ((s = await sr.ReadLineAsync(cancellationToken)) != null)
+                while (await sr.ReadLineAsync(cancellationToken) is { } s)
                 {
                     if (cancellationToken.IsCancellationRequested)
                     {
                         firstRecord.Message = $"found {matchesCount} matches in {lineNumber} lines";
                         yield break;
-                    }
-
-                    if (lineNumber % 500 == 0)
-                    {
-                        if (records.Count > 0)
-                        {
-                            yield return records;
-
-                            records = [];
-                        }
                     }
 
                     var lr = filter.Match(shortFileName, s, Convert.ToString(lineNumber++));

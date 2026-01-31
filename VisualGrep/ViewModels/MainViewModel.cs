@@ -19,6 +19,8 @@ public class MainViewModel : ViewModelBase
     private CancellationTokenSource? loadCancellationSource;
     private readonly SemaphoreSlim loadEndEvent = new SemaphoreSlim(1);
 
+    private readonly SourceList<LogRecord> logRecords = new SourceList<LogRecord>();
+
     public bool IsFileListSet { get; set; } = true;
 
     public bool IsFolderSet { get; set; } = true;
@@ -28,7 +30,8 @@ public class MainViewModel : ViewModelBase
 
     public MainViewModel()
     {
-        this.LogRecords = [
+//        this.LogRecords = new ReadOnlyObservableCollection<LogRecord>(this.logRecords.Connect().Bind(out var logRecords).Subscribe());
+        this.logRecords.AddRange([
             new LogRecord 
                 { FileName = "f1", LineNumber = "1", Message = "message1" },
             new LogRecord 
@@ -37,7 +40,10 @@ public class MainViewModel : ViewModelBase
                 { FileName = "f1", LineNumber = "3", Message = "message3" },
             new LogRecord 
                 { FileName = "f1", LineNumber = "4", Message = "message4" }
-        ];
+        ]);
+
+        this.logRecords.Connect().Bind(out var lr).Subscribe();
+        this.LogRecords = lr;
 
         this.FolderSelectCommand = ReactiveCommand.Create(this.OnFolderSelectCommand);
         this.FileSelectCommand = ReactiveCommand.Create(this.OnFileSelectCommand);
@@ -51,7 +57,7 @@ public class MainViewModel : ViewModelBase
     }
 
     [Reactive]
-    public ObservableCollection<LogRecord> LogRecords { get; set; }
+    public ReadOnlyObservableCollection<LogRecord> LogRecords { get; set; }
 
     [Reactive]
     public string Status { get; set; } = "Ready";
@@ -135,7 +141,7 @@ public class MainViewModel : ViewModelBase
     {
         this.StopSearch();
 
-        this.LogRecords.Clear();
+        this.logRecords.Clear();
 
         ISearchFilter filter;
         if (this.UseRegExp)
@@ -158,7 +164,7 @@ public class MainViewModel : ViewModelBase
         int countOfLoaded = 0;
         await foreach (var lr in reader.GetLogRecords(filter).WithCancellation(this.loadCancellationSource.Token))
         {
-            this.LogRecords.AddRange(lr);
+            this.logRecords.AddRange(lr);
             countOfLoaded += lr.Count;
 
             this.Status = $"Found {countOfLoaded} matching lines";
