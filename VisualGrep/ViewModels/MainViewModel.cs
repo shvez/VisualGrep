@@ -30,7 +30,6 @@ public class MainViewModel : ViewModelBase
 
     public MainViewModel()
     {
-//        this.LogRecords = new ReadOnlyObservableCollection<LogRecord>(this.logRecords.Connect().Bind(out var logRecords).Subscribe());
         this.logRecords.AddRange([
             new LogRecord 
                 { FileName = "f1", LineNumber = "1", Message = "message1" },
@@ -159,15 +158,21 @@ public class MainViewModel : ViewModelBase
 
         var reader = new FileReader(folder, "*.*");
 
-        this.DataGridService.AddColumns(["File", "Line", "Message"]);
+        bool first = true;
 
         int countOfLoaded = 0;
         await foreach (var lr in reader.GetLogRecords(filter).WithCancellation(this.loadCancellationSource.Token))
         {
-            this.logRecords.AddRange(lr);
-            countOfLoaded += lr.Count;
+          if (first)
+          {
+              this.DataGridService.UpdateColumns(lr[1].AdditionalInfo.Keys);
+              first = false;
+          }
 
-            this.Status = $"Found {countOfLoaded} matching lines";
+          this.logRecords.AddRange(lr);
+          countOfLoaded += lr.Count;
+
+          this.Status = $"Found {countOfLoaded} matching lines";
         }
 
         this.loadCancellationSource.Dispose();

@@ -112,7 +112,7 @@
         </RelativePanel>
         <RelativePanel Grid.Row="4">
             <DataGrid Name="DataGridControl"  
-                      AutoGenerateColumns="True" 
+                      AutoGenerateColumns="False" 
                       IsReadOnly="True"
                       GridLinesVisibility="All"
                       BorderThickness="1"

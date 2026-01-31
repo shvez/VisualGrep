@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Data;
 
 using DynamicData;
 
@@ -71,42 +72,42 @@ public partial class MainView : UserControl, IDataGrid
         base.OnKeyUp(e);
     }
 
-    public void AddColumns(string[] names)
+    public void UpdateColumns(IEnumerable<string> additionalColumnNames)
     {
-        //this.DataGridControl.Columns.Clear();
+        var dataGrid = this.DataGridControl;
+        dataGrid.Columns.Clear();
 
-        //foreach (var name in names)
-        //{
-        //    var c = new DataGridTextColumn
-        //    {
-        //        Header = name
-        //    };
-        //    this.DataGridControl.Columns.Add(c);
-        //}
-    }
+        // Базовые столбцы
+        dataGrid.Columns.Add(new DataGridTextColumn 
+        { 
+            Header = "FileName", 
+            Binding = new Binding("FileName"),
+            CanUserResize = true
+        });
+        dataGrid.Columns.Add(new DataGridTextColumn 
+        { 
+            Header = "LineNumber", 
+            Binding = new Binding("LineNumber"),
+            CanUserResize = true 
+        });
+        dataGrid.Columns.Add(new DataGridTextColumn 
+        { 
+            Header = "Message", 
+            Binding = new Binding("Message"),
+            Width = new DataGridLength(400, DataGridLengthUnitType.Star),
+            CanUserResize = true
+        });
 
-    public void Clear()
-    {
-        this.DataGridControl.Columns.Clear();
-    }
-
-    public void AddEntries(LogRecord[] entries)
-    {
-        foreach (var logRecord in entries)
+        // Dynamic columns from AdditionalInfo
+        foreach (var columnName in additionalColumnNames)
         {
-            this.logRecords.AddRange(entries);
+            dataGrid.Columns.Add(new DataGridTextColumn
+            {
+                Header = columnName,
+                Binding = new Binding($"AdditionalInfo[{columnName}]"),
+                CanUserResize = true,
+//                Width = new DataGridLength(30, DataGridLengthUnitType.Star)
+            });
         }
-    }
-
-    public int AddEntry(LogRecord entry)
-    {
-     //   this.logRecords.Add(entry);
-//        return this.logRecords.Count - 1;
-        return 0;
-  }
-
-    public void ModifyEntry(int pos, LogRecord entry)
-    {
-//        this.logRecords[pos] = entry;
     }
 }

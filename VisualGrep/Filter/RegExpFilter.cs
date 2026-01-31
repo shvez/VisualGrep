@@ -30,8 +30,11 @@ namespace VisualGrep.Filter
                 };
 
                 var groups = match.Groups;
-                foreach (Group group in groups)
+                // Skip group 0 (full match) and add only named/captured groups
+                for (int i = 1; i < groups.Count; i++)
                 {
+                    var group = groups[i];
+                    lr.AdditionalInfo.Add(group.Name, group.Value);
                 }
                 return lr;
             }
