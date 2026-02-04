@@ -15,10 +15,10 @@
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="35"/>
-            <RowDefinition Height="35"/>
-            <RowDefinition Height="35"/>
-            <RowDefinition Height="35"/>
+            <RowDefinition Height="33"/>
+            <RowDefinition Height="33"/>
+            <RowDefinition Height="33"/>
+            <RowDefinition Height="330"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <RelativePanel Grid.Row="0">
@@ -68,7 +68,9 @@
                       RelativePanel.AlignRightWithPanel="True">Use RegEx</CheckBox>
         </RelativePanel>
         <RelativePanel Grid.Row="2">
-            <Button Name="TextButton" Command="{Binding FolderSelectCommand}" Width="90">
+            <Button Name="TextButton" Command="{Binding FolderSelectCommand}" Width="90"
+                    Margin="3,0,0,0" 
+                    >
                 Text
             </Button>
             <AutoCompleteBox Name="RegExpTextBox" 
@@ -101,14 +103,11 @@
             <Button Name="StopButton"
                     RelativePanel.RightOf="SearchButton" 
                     Margin="3,0,0,0" Command="{Binding StopCommand}">Stop</Button>
-            <CheckBox Name="PauseCheckBox" 
-                      RelativePanel.RightOf="StopButton" 
-                      HorizontalAlignment="Right" Margin="3,0,0,0">Pause</CheckBox>
-            <TextBlock RelativePanel.RightOf="PauseCheckBox" 
+            <TextBlock RelativePanel.RightOf="StopButton" 
                        RelativePanel.AlignRightWithPanel="True"
-                       RelativePanel.AlignBottomWith="PauseCheckBox"
                        Text="{Binding Status}" 
-                       Margin="3,0,0,0"/>
+                       Margin="3,6,0,0"
+                       />
         </RelativePanel>
         <RelativePanel Grid.Row="4">
             <DataGrid Name="DataGridControl"  
@@ -123,7 +122,7 @@
                       RelativePanel.AlignTopWithPanel="True"
                       RelativePanel.AlignRightWithPanel="True"
                       RelativePanel.AlignLeftWithPanel="True"
-                      Margin="3,3,3,3"
+                      Margin="3,0,3,3"
             >
             </DataGrid>
 
