@@ -1,10 +1,12 @@
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Text;
+using Avalonia.Media;
 using DynamicData;
 using ReactiveUI.Fody.Helpers;
 
 using VisualGrep.Models;
+using VisualGrep.Services;
 
 namespace VisualGrep.ViewModels
 {
@@ -41,6 +43,10 @@ namespace VisualGrep.ViewModels
         public string FilePath { get; }
 
         public string FullFilePath => this.FilePath;
+
+        public FontFamily LogFontFamily => string.IsNullOrWhiteSpace(AppSettings.LogFontFamily)
+            ? FontFamily.Default
+            : new FontFamily(AppSettings.LogFontFamily);
 
         public string FileName { get; }
 

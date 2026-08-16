@@ -47,17 +47,12 @@ public partial class FileTabView : UserControl
             return;
         }
 
-        this.FileLinesDataGrid.SelectedIndex = index;
-
-        if (this.FileLinesDataGrid.Columns.Count == 0)
-        {
-            return;
-        }
+        this.FileLinesListBox.SelectedIndex = index;
 
         var item = this.currentTab.Lines[index];
         try
         {
-            this.FileLinesDataGrid.ScrollIntoView(item, this.FileLinesDataGrid.Columns[0]);
+            this.FileLinesListBox.ScrollIntoView(item);
         }
         catch
         {

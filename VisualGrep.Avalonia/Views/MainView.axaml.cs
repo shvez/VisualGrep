@@ -156,7 +156,7 @@ public partial class MainView : UserControl, IDataGrid
                 }
 
                 var fileTabView = this.GetSelectedTabView();
-                if (fileTabView?.FindControl<DataGrid>("FileLinesDataGrid") is not { } dataGrid || dataGrid.Columns.Count == 0)
+                if (fileTabView?.FindControl<ListBox>("FileLinesListBox") is not { } listBox)
                 {
                     return;
                 }
@@ -166,12 +166,12 @@ public partial class MainView : UserControl, IDataGrid
                     return;
                 }
 
-                dataGrid.SelectedIndex = index;
+                listBox.SelectedIndex = index;
                 var item = this.currentModel.SelectedFileTab.Lines[index];
 
                 try
                 {
-                    dataGrid.ScrollIntoView(item, dataGrid.Columns[0]);
+                    listBox.ScrollIntoView(item);
                 }
                 catch
                 {

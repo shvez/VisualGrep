@@ -23,24 +23,40 @@
 					 VerticalAlignment="Center"
 					 VerticalContentAlignment="Center" />
 		</Grid>
-		<DataGrid Grid.Row="1"
-				  x:Name="FileLinesDataGrid"
-				  AutoGenerateColumns="False"
-                  HeadersVisibility="None"
-				  IsReadOnly="True"
-				  GridLinesVisibility="All"
-				  BorderThickness="1"
-				  ItemsSource="{Binding Lines}"
-				  SelectedIndex="{Binding SelectedLineIndex}"
-				  RowHeight="20">
-			<DataGrid.ContextMenu>
-				<ContextMenu>
-					<MenuItem Header="Open file externally" Click="OpenFileExternally_Click" />
-				</ContextMenu>
-			</DataGrid.ContextMenu>
-			<DataGrid.Columns>
-				<DataGridTextColumn Binding="{Binding}" Width="*" />
-			</DataGrid.Columns>
-		</DataGrid>
+		<Border Grid.Row="1"
+				BorderBrush="Gray"
+				BorderThickness="1">
+			<ListBox x:Name="FileLinesListBox"
+					 ItemsSource="{Binding Lines}"
+					 SelectedIndex="{Binding SelectedLineIndex}"
+					 Padding="0"
+					 Background="Transparent"
+					 BorderThickness="0">
+				<ListBox.Styles>
+					<Style Selector="ListBoxItem">
+						<Setter Property="Padding" Value="0" />
+						<Setter Property="MinHeight" Value="0" />
+					</Style>
+				</ListBox.Styles>
+				<ListBox.ContextMenu>
+					<ContextMenu>
+						<MenuItem Header="Open file externally" Click="OpenFileExternally_Click" />
+					</ContextMenu>
+				</ListBox.ContextMenu>
+				<ListBox.ItemsPanel>
+					<ItemsPanelTemplate>
+						<VirtualizingStackPanel />
+					</ItemsPanelTemplate>
+				</ListBox.ItemsPanel>
+				<ListBox.ItemTemplate>
+					<DataTemplate x:DataType="x:String">
+						<TextBlock Text="{Binding}"
+								   TextTrimming="CharacterEllipsis"
+								   FontFamily="{Binding $parent[ListBox].((vm:FileTabViewModel)DataContext).LogFontFamily}"
+								   FontSize="14" />
+					</DataTemplate>
+				</ListBox.ItemTemplate>
+			</ListBox>
+		</Border>
 	</Grid>
 </UserControl>
