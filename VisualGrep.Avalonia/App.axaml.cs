@@ -27,11 +27,13 @@ public partial class App : Application
 
             var folderSelectionService = new DesktopSelectFolderService(desktop.MainWindow, Environment.CurrentDirectory);
             var fileSelectionService = new DesktopSelectFilesService(desktop.MainWindow, Environment.CurrentDirectory);
+            var openFileService = new DesktopOpenFileService(desktop.MainWindow);
 
             var view = new MainViewModel
             {
                 FolderSelectionService = folderSelectionService,
-                FileSelectionService = fileSelectionService
+                FileSelectionService = fileSelectionService,
+                OpenFileService = openFileService
             };
             desktop.MainWindow.DataContext = view;
 

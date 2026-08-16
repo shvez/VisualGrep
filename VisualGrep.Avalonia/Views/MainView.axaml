@@ -4,6 +4,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:VisualGrep.ViewModels;assembly=VisualGrep"
+             xmlns:local="clr-namespace:VisualGrep.Avalonia.Views;assembly=VisualGrep.Avalonia"
              mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="800"
              x:Class="VisualGrep.Avalonia.Views.MainView"
              x:DataType="vm:MainViewModel">
@@ -18,8 +19,10 @@
             <RowDefinition Height="33"/>
             <RowDefinition Height="33"/>
             <RowDefinition Height="33"/>
-            <RowDefinition Height="330"/>
+            <RowDefinition Height="33"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="2"/>
+            <RowDefinition Height="300" MinHeight="100"/>
         </Grid.RowDefinitions>
         <RelativePanel Grid.Row="0">
                 <Button 
@@ -124,8 +127,58 @@
                       RelativePanel.AlignLeftWithPanel="True"
                       Margin="3,0,3,3"
             >
+                <DataGrid.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Open file externally" Command="{Binding OpenSelectedFileCommand}" />
+                    </ContextMenu>
+                </DataGrid.ContextMenu>
             </DataGrid>
 
         </RelativePanel>
+        <GridSplitter Grid.Row="5" 
+                      HorizontalAlignment="Stretch" 
+                      VerticalAlignment="Center"
+                      IsVisible="{Binding IsFileTabsVisible}"
+                      Height="2" />
+        <DockPanel Grid.Row="6" IsVisible="{Binding IsFileTabsVisible}" Margin="3,0,3,3" LastChildFill="True">
+            <ListBox DockPanel.Dock="Top"
+                     Name="TabHeaderListBox"
+                     ItemsSource="{Binding FileTabs}"
+                     SelectedItem="{Binding SelectedFileTab}"
+                     ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                     ScrollViewer.VerticalScrollBarVisibility="Disabled">
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal" />
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+                <ListBox.ItemTemplate>
+                    <DataTemplate x:DataType="vm:FileTabViewModel">
+                        <TextBlock Text="{Binding FileName}" FontSize="12" VerticalAlignment="Center">
+                            <TextBlock.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Header="Close" Command="{Binding $parent[ListBox].((vm:MainViewModel)DataContext).CloseTabCommand}" CommandParameter="{Binding}" />
+                                    <MenuItem Header="Close Others" Command="{Binding $parent[ListBox].((vm:MainViewModel)DataContext).CloseOtherTabsCommand}" CommandParameter="{Binding}" />
+                                    <MenuItem Header="Close All" Command="{Binding $parent[ListBox].((vm:MainViewModel)DataContext).CloseAllTabsCommand}" CommandParameter="{Binding}" />
+                                </ContextMenu>
+                            </TextBlock.ContextMenu>
+                        </TextBlock>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+            <ItemsControl Name="FileTabsHost"
+                          ItemsSource="{Binding FileTabs}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <Grid />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="vm:FileTabViewModel">
+                        <local:FileTabView IsVisible="{Binding IsSelected}" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </DockPanel>
     </Grid>
 </UserControl>

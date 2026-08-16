@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 
+using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Presenters;
 using Avalonia.Input;
 using Avalonia.Data;
+using Avalonia.Threading;
 
 using DynamicData;
 
@@ -17,6 +21,7 @@ namespace VisualGrep.Avalonia.Views;
 public partial class MainView : UserControl, IDataGrid
 {
     private ReadOnlyObservableCollection<LogRecord> logRecords;
+    private MainViewModel? currentModel;
 
     public MainView()
     {
@@ -30,14 +35,25 @@ public partial class MainView : UserControl, IDataGrid
 
         if (this.DataContext is MainViewModel model)
         {
+            this.currentModel = model;
             model.DataGridService = this;
             this.logRecords = model.LogRecords;
+            model.PropertyChanged += this.OnModelPropertyChanged;
         }
     }
 
+    private void OnModelPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(MainViewModel.SelectedFileTab))
+        {
+            Dispatcher.UIThread.Post(this.ScrollSelectedLineIntoView, DispatcherPriority.Background);
+        }
+    }
+
+
     private void AutoCompleteBox_OnDropDownOpened(object? sender, EventArgs e)
     {
-        
+
     }
 
     private async void RegExpInputElement_OnKeyUp(object? sender, KeyEventArgs e)
@@ -70,6 +86,25 @@ public partial class MainView : UserControl, IDataGrid
             }
         }
         base.OnKeyUp(e);
+    }
+
+    private FileTabView? GetSelectedTabView()
+    {
+        var host = this.FindControl<ItemsControl>("FileTabsHost");
+        if (host == null || this.currentModel?.SelectedFileTab == null)
+        {
+            return null;
+        }
+
+        foreach (var container in host.GetRealizedContainers())
+        {
+            if (container is ContentPresenter { Content: FileTabViewModel vm } presenter && vm == this.currentModel.SelectedFileTab)
+            {
+                return presenter.Child as FileTabView;
+            }
+        }
+
+        return null;
     }
 
     public void UpdateColumns(IEnumerable<string> additionalColumnNames)
@@ -108,5 +143,41 @@ public partial class MainView : UserControl, IDataGrid
                 CanUserResize = true,
             });
         }
+    }
+
+    public void ScrollSelectedLineIntoView()
+    {
+        Dispatcher.UIThread.Post(
+            () =>
+            {
+                if (this.currentModel?.SelectedFileTab?.SelectedLineIndex is not { } index)
+                {
+                    return;
+                }
+
+                var fileTabView = this.GetSelectedTabView();
+                if (fileTabView?.FindControl<DataGrid>("FileLinesDataGrid") is not { } dataGrid || dataGrid.Columns.Count == 0)
+                {
+                    return;
+                }
+
+                if (index < 0 || index >= this.currentModel.SelectedFileTab.Lines.Count)
+                {
+                    return;
+                }
+
+                dataGrid.SelectedIndex = index;
+                var item = this.currentModel.SelectedFileTab.Lines[index];
+
+                try
+                {
+                    dataGrid.ScrollIntoView(item, dataGrid.Columns[0]);
+                }
+                catch
+                {
+                    // Ignore if virtualization prevents scrolling.
+                }
+            },
+            DispatcherPriority.Background);
     }
 }

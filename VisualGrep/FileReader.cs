@@ -31,13 +31,13 @@ namespace VisualGrep
 
                 var lineNumber = 0;
                 var matchesCount = 0;
-                var shortFileName = Path.GetFileName(fileName);
+                var relativeFileName = Path.GetRelativePath(this.path, fileName);
                 using var sr = File.OpenText(fileName);
 
                 records.Clear();
                 var firstRecord = new LogRecord()
                 {
-                    FileName = shortFileName,
+                    FileName = relativeFileName,
                     LineNumber = "-",
                     Message = $"found {matchesCount} matches in {lineNumber} lines"
                 };
@@ -50,7 +50,7 @@ namespace VisualGrep
                         yield break;
                     }
 
-                    var lr = filter.Match(shortFileName, s, Convert.ToString(lineNumber++));
+                    var lr = filter.Match(relativeFileName, s, Convert.ToString(lineNumber++));
                     if (lr != null)
                     {
                         ++matchesCount;

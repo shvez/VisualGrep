@@ -44,15 +44,35 @@ public class MainViewModel : ViewModelBase
         this.logRecords.Connect().Bind(out var lr).Subscribe();
         this.LogRecords = lr;
 
+        this.FileTabs = [];
+
         this.FolderSelectCommand = ReactiveCommand.Create(this.OnFolderSelectCommand);
         this.FileSelectCommand = ReactiveCommand.Create(this.OnFileSelectCommand);
         this.SearchCommand = ReactiveCommand.Create(this.OnSearchCommand);
         this.StopCommand = ReactiveCommand.Create(this.OnStopCommand);
-        this.StopCommand = ReactiveCommand.Create(this.OnStopCommand);
+
+        this.OpenSelectedFileCommand = ReactiveCommand.Create(this.OnOpenSelectedFileCommand);
+        this.CloseTabCommand = ReactiveCommand.Create<FileTabViewModel>(this.OnCloseTabCommand);
+        this.CloseOtherTabsCommand = ReactiveCommand.Create<FileTabViewModel>(this.OnCloseOtherTabsCommand);
+        this.CloseAllTabsCommand = ReactiveCommand.Create<FileTabViewModel>(_ => this.OnCloseAllTabsCommand());
 
         this.SearchFilter = "";
         this.UseRegExp = true;
         this.Folder = Environment.CurrentDirectory;
+
+        this.WhenAnyValue(x => x.SelectedLogRecord)
+            .Subscribe(this.OnSelectedLogRecordChanged);
+
+        this.WhenAnyValue(x => x.SelectedFileTab)
+            .Subscribe(this.OnSelectedFileTabChanged);
+    }
+
+    private void OnSelectedFileTabChanged(FileTabViewModel? tab)
+    {
+        foreach (var fileTab in this.FileTabs)
+        {
+            fileTab.IsSelected = fileTab == tab;
+        }
     }
 
     [Reactive]
@@ -79,6 +99,15 @@ public class MainViewModel : ViewModelBase
     [Reactive]
     public LogRecord? SelectedLogRecord { get; set; }
 
+    [Reactive]
+    public ObservableCollection<FileTabViewModel> FileTabs { get; set; }
+
+    [Reactive]
+    public FileTabViewModel? SelectedFileTab { get; set; }
+
+    [Reactive]
+    public bool IsFileTabsVisible { get; set; }
+
     [IgnoreDataMember]
     public ReactiveCommand<Unit, Unit> FolderSelectCommand { get; }
 
@@ -90,8 +119,23 @@ public class MainViewModel : ViewModelBase
 
     [IgnoreDataMember]
     public ReactiveCommand<Unit, Unit> StopCommand { get; }
+
+    [IgnoreDataMember]
+    public ReactiveCommand<Unit, Unit> OpenSelectedFileCommand { get; }
+
+    [IgnoreDataMember]
+    public ReactiveCommand<FileTabViewModel, Unit> CloseTabCommand { get; }
+
+    [IgnoreDataMember]
+    public ReactiveCommand<FileTabViewModel, Unit> CloseOtherTabsCommand { get; }
+
+    [IgnoreDataMember]
+    public ReactiveCommand<FileTabViewModel, Unit> CloseAllTabsCommand { get; }
+
     public ISelectFolderService? FolderSelectionService { get; set; }
     public ISelectFilesService? FileSelectionService { get; set; }
+
+    public IOpenFileService? OpenFileService { get; set; }
 
     public IDataGrid DataGridService { get; set; }
 
@@ -134,6 +178,97 @@ public class MainViewModel : ViewModelBase
     private void OnSearchCommand()
     {
         _ = this.DoSearch();
+    }
+
+    private async void OnSelectedLogRecordChanged(LogRecord? record)
+    {
+        if (record == null)
+        {
+            return;
+        }
+
+        var filePath = Path.Combine(this.Folder, record.FileName);
+
+        var tab = this.FileTabs.FirstOrDefault(t => string.Equals(t.FilePath, filePath, StringComparison.OrdinalIgnoreCase));
+        if (tab == null)
+        {
+            tab = new FileTabViewModel(filePath);
+            this.FileTabs.Add(tab);
+        }
+
+        if (int.TryParse(record.LineNumber, out var lineNumber))
+        {
+            await tab.LoadLinesAsync(lineNumber);
+        }
+        else
+        {
+            await tab.LoadLinesAsync();
+        }
+
+        this.SelectedFileTab = tab;
+        this.IsFileTabsVisible = true;
+        this.OnSelectedFileTabChanged(tab);
+    }
+
+    private void OnOpenSelectedFileCommand()
+    {
+        var filePath = this.GetSelectedFilePath();
+        if (string.IsNullOrEmpty(filePath))
+        {
+            return;
+        }
+
+        this.OpenFileService?.OpenFile(filePath);
+    }
+
+    public string? GetSelectedFilePath()
+    {
+        if (this.SelectedLogRecord != null)
+        {
+            return Path.Combine(this.Folder, this.SelectedLogRecord.FileName);
+        }
+
+        return this.SelectedFileTab?.FilePath;
+    }
+
+    private void OnCloseTabCommand(FileTabViewModel tab)
+    {
+        var index = this.FileTabs.IndexOf(tab);
+        this.FileTabs.Remove(tab);
+
+        if (this.SelectedFileTab == tab)
+        {
+            if (this.FileTabs.Count == 0)
+            {
+                this.SelectedFileTab = null;
+            }
+            else
+            {
+                var newIndex = index < this.FileTabs.Count ? index : this.FileTabs.Count - 1;
+                this.SelectedFileTab = this.FileTabs[newIndex];
+            }
+        }
+
+        this.IsFileTabsVisible = this.FileTabs.Count > 0;
+    }
+
+    private void OnCloseOtherTabsCommand(FileTabViewModel tab)
+    {
+        var toRemove = this.FileTabs.Where(t => t != tab).ToList();
+        foreach (var item in toRemove)
+        {
+            this.FileTabs.Remove(item);
+        }
+
+        this.SelectedFileTab = tab;
+        this.IsFileTabsVisible = this.FileTabs.Count > 0;
+    }
+
+    private void OnCloseAllTabsCommand()
+    {
+        this.FileTabs.Clear();
+        this.SelectedFileTab = null;
+        this.IsFileTabsVisible = false;
     }
 
     public async Task DoSearch()

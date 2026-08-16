@@ -1,0 +1,46 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:vm="clr-namespace:VisualGrep.ViewModels;assembly=VisualGrep"
+			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="400"
+			 x:Class="VisualGrep.Avalonia.Views.FileTabView"
+			 x:DataType="vm:FileTabViewModel">
+	<Grid RowDefinitions="28,*">
+		<Grid Grid.Row="0" ColumnDefinitions="Auto,*" Margin="2">
+			<ComboBox Grid.Column="0"
+					  x:Name="EncodingComboBox"
+					  Width="90"
+					  VerticalAlignment="Center"
+					  ItemsSource="{Binding AvailableEncodings}"
+					  SelectedItem="{Binding SelectedEncoding}"
+					  DisplayMemberBinding="{Binding Name}"
+					  SelectionChanged="EncodingComboBox_OnSelectionChanged" />
+			<TextBox Grid.Column="1"
+					 Margin="4,0,0,0"
+					 IsReadOnly="True"
+					 Text="{Binding FullFilePath}"
+					 VerticalAlignment="Center"
+					 VerticalContentAlignment="Center" />
+		</Grid>
+		<DataGrid Grid.Row="1"
+				  x:Name="FileLinesDataGrid"
+				  AutoGenerateColumns="False"
+                  HeadersVisibility="None"
+				  IsReadOnly="True"
+				  GridLinesVisibility="All"
+				  BorderThickness="1"
+				  ItemsSource="{Binding Lines}"
+				  SelectedIndex="{Binding SelectedLineIndex}"
+				  RowHeight="20">
+			<DataGrid.ContextMenu>
+				<ContextMenu>
+					<MenuItem Header="Open file externally" Click="OpenFileExternally_Click" />
+				</ContextMenu>
+			</DataGrid.ContextMenu>
+			<DataGrid.Columns>
+				<DataGridTextColumn Binding="{Binding}" Width="*" />
+			</DataGrid.Columns>
+		</DataGrid>
+	</Grid>
+</UserControl>
